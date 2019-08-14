@@ -24,5 +24,5 @@ RUN mvn install
 FROM openjdk:8-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/prestok8s-1.0-SNAPSHOT-jar-with-dependencies.jar /app
-CMD ["java -jar prestok8s-1.0-SNAPSHOT-jar-with-dependencies.jar"]
+CMD ["java -jar ./prestok8s-1.0-SNAPSHOT-jar-with-dependencies.jar"]
 

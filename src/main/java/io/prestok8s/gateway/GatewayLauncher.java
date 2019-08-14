@@ -80,7 +80,7 @@ public class GatewayLauncher extends BaseApp<GatewayConfiguration> {
 
   public static void main(String[] args) throws Exception {
     // base package is scanned for any Resource class to be loaded by default.
-    String basePackage = "com.lyft";
+    String basePackage = "io.prestok8s";
     new GatewayLauncher(basePackage).run(args);
   }
 }

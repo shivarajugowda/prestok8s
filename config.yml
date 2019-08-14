@@ -1,0 +1,46 @@
+requestRouter:
+  port: 8080
+  name: prestoRouter
+  cacheDir: /var/log/prestoproxy/cache
+  historySize: 1000
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 8090
+  adminConnectors:
+    - type: http
+      port: 8091
+
+notifier:
+  smtpHost: localhost
+  smtpPort: 587
+  sender: presto-gw-monitor-noreply@lyft.com
+  recipients:
+    - prestodeurorg.com
+
+modules:
+  - io.prestok8s.gateway.module.GatewayProviderModule
+ # - io.prestok8s.gateway.module.NotifierModule
+
+managedApps:
+  - io.prestok8s.gateway.GatewayManagedApp
+#  - io.prestok8s.gateway.ActiveClusterMonitor
+
+# Logging settings.
+logging:
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+
+  # Logger-specific levels.
+  loggers:
+    io.prestok8s: INFO
+
+  appenders:
+    - type: console
+    - type: file
+      currentLogFilename: /var/log/prestoproxy/prestoproxy-java.log
+      archivedLogFilenamePattern: /var/log/prestoproxy/prestoproxy-java-%d{yyyy-MM-dd}-%i.log.gz
+      archivedFileCount: 7
+      timeZone: UTC
+      maxFileSize: 100MB
