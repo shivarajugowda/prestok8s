@@ -1,0 +1,19 @@
+package io.prestok8s.gateway.router;
+
+import io.prestok8s.gateway.config.ProxyBackendConfiguration;
+
+import java.util.List;
+
+public interface GatewayBackendManager {
+  List<ProxyBackendConfiguration> getAllBackends();
+
+  List<ProxyBackendConfiguration> getAllActiveBackends();
+
+  List<ProxyBackendConfiguration> getActiveAdhocBackends();
+
+  List<ProxyBackendConfiguration> getActiveBackends(String routingGroup);
+
+  void deactivateBackend(String backendName);
+
+  void activateBackend(String backendName);
+}
