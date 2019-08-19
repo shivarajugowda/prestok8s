@@ -1,0 +1,20 @@
+{{- if gt (int .Values.server.workers) 0 }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "presto.workerhpa" . }}
+  labels:
+    app: {{ template "presto.name" . }}
+    chart: {{ template "presto.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: workerhpa
+spec:
+  minReplicas: {{ .Values.server.workers }}
+  maxReplicas: {{ .Values.server.maxWorkers }}
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: {{ template "presto.worker" . }}
+  targetCPUUtilizationPercentage: 60
+{{- end }}

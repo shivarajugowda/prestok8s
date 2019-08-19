@@ -1,5 +1,6 @@
 package io.prestok8s.gateway.k8s;
 
+import io.fabric8.kubernetes.api.model.Service;
 import io.prestok8s.gateway.config.ProxyBackendConfiguration;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodStatus;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class K8sClient implements Runnable {
     ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-    public static String NAME_SPACE = "presto";
+    public static String PRESTO_SELECTOR = "app=presto";
     private final ConcurrentMap<String, ProxyBackendConfiguration> backendMap;
     AtomicInteger portStart = new AtomicInteger(11000);
 
@@ -30,19 +31,19 @@ public class K8sClient implements Runnable {
         long start = System.currentTimeMillis();
         try {
             KubernetesClient client = new DefaultKubernetesClient();
-            List<Pod> pods = client.pods().inNamespace(NAME_SPACE).list().getItems();
+            List<Service> services = client.services().withLabel(PRESTO_SELECTOR).list().getItems();
 
             // Handle deletions.
-            List<String> podNames = pods.stream().map(name -> name.getMetadata().getName()).collect(Collectors.toList());
-            List<String> removedPodsNames = new ArrayList<>();
-            for (String podName : backendMap.keySet()) {
-                if (!podNames.contains(podName))
-                    removedPodsNames.add(podName);
+            List<String> serviceNames = services.stream().map(name -> name.getMetadata().getName()).collect(Collectors.toList());
+            List<String> removedServiceNames = new ArrayList<>();
+            for (String serviceName : backendMap.keySet()) {
+                if (!serviceNames.contains(serviceName))
+                    removedServiceNames.add(serviceName);
             }
-            removedPodsNames.parallelStream().forEach(this::removeBackend);
+            removedServiceNames.parallelStream().forEach(this::removeBackend);
 
             // Handle additions.
-            pods.parallelStream().forEach(this::addBackend);
+            services.parallelStream().forEach(this::addBackend);
 
             client.close();
         } catch (Throwable th){
@@ -50,19 +51,17 @@ public class K8sClient implements Runnable {
         }
     }
 
-    private void addBackend(Pod pod){
-        PodStatus podStatus = pod.getStatus();
+    private void addBackend(Service service){
+        String serviceName = service.getMetadata().getName();
+        String nameSpace = service.getMetadata().getNamespace();
 
-        if(!Readiness.isPodReady(pod))
-            return;
-
-        if(backendMap.containsKey(pod.getMetadata().getName()))
+        if(backendMap.containsKey(service.getMetadata().getName()))
             return;
 
         ProxyBackendConfiguration px = new ProxyBackendConfiguration();
         int portNum = portStart.getAndIncrement();
-        String cmd = "kubectl port-forward " + pod.getMetadata().getName()
-                + " -n " + NAME_SPACE + " " + portNum + ":8080";
+        String cmd = "kubectl port-forward svc/" + serviceName
+                + " -n " + nameSpace + " " + portNum + ":8080";
 
         try {
             Process process = Runtime.getRuntime().exec(cmd);
@@ -71,7 +70,7 @@ public class K8sClient implements Runnable {
             e.printStackTrace();
         }
 
-        px.setName(pod.getMetadata().getName());
+        px.setName(serviceName);
         px.setProxyTo("http://localhost:" + portNum);
         px.setRoutingGroup("adhoc");
 
@@ -90,11 +89,11 @@ public class K8sClient implements Runnable {
         */
         backendMap.put(px.getName(), px);
 
-        System.out.println("Added Pod to backends : " + pod.getMetadata().getName());
+        System.out.println("Added Presto Service to backend : " + serviceName);
     }
 
-    private void removeBackend(String podName){
-        ProxyBackendConfiguration px =  backendMap.remove(podName);
+    private void removeBackend(String serviceName){
+        ProxyBackendConfiguration px =  backendMap.remove(serviceName);
         if (px != null) {
             if (px.getProxyServer() != null)
                 px.getProxyServer().close();
@@ -102,6 +101,6 @@ public class K8sClient implements Runnable {
                 px.getPortForward().destroyForcibly();
         }
 
-        System.out.println("Removed Pod from backends : " + podName);
+        System.out.println("Removed Presto Service from backends : " + serviceName);
     }
 }
