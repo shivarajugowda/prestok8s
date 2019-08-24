@@ -9,6 +9,8 @@ public interface GatewayBackendManager {
 
   List<ProxyBackendConfiguration> getAllActiveBackends();
 
+  List<ProxyBackendConfiguration> getAllDeActiveBackends();
+
   List<ProxyBackendConfiguration> getActiveAdhocBackends();
 
   List<ProxyBackendConfiguration> getActiveBackends(String routingGroup);

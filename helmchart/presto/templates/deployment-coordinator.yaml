@@ -39,6 +39,10 @@ spec:
             - name: http-coord
               containerPort: {{ .Values.server.config.http.port }}
               protocol: TCP
+            - name: jmxport
+              protocol: TCP
+              containerPort: {{ .Values.server.config.http.jmxport }}
+              hostPort: {{ .Values.server.config.http.jmxport }}
           livenessProbe:
             httpGet:
               path: /v1/cluster

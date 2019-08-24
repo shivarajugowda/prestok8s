@@ -11,6 +11,6 @@ public class ProxyBackendConfiguration extends ProxyServerConfiguration {
   private boolean includeInRouter = true;
   private boolean active = true;
   private String routingGroup = "adhoc";
-  private ProxyServer proxyServer = null;
-  private Process portForward = null;
+  private int numWorkers = 0;
+  private int runningQueries = 0;
 }

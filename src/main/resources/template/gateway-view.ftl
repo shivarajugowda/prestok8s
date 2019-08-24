@@ -3,6 +3,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta http-equiv="refresh" content="10">
     <style>
         .pull-left {
             float: left !important
@@ -46,8 +47,9 @@
         <tr>
             <th>ClusterName</th>
             <th>URL</th>
-            <th>LocalPort</th>
             <th>RoutingGroup</th>
+            <th>NumWorkers</th>
+            <th>RunningQueries</th>
         </tr>
         </thead>
         <tbody>
@@ -55,17 +57,19 @@
         <tr>
             <td>  ${bc.name}</td>
             <td><a href="${bc.proxyTo}" target="_blank">${bc.proxyTo}</a></td>
-            <td> ${bc.localPort}</td>
             <td> ${bc.routingGroup}</td>
+            <td> ${bc.numWorkers}</td>
+            <td> ${bc.runningQueries}</td>
         </tr>
         </#list>
         </tbody>
     </table>
 </div>
 
-
+<br />
 <a onclick="location.reload()" href="">Refresh</a>
-
+<br />
+<br />
 <#if queryHistory?size != 0>
 <div><b>Query details [history size = ${queryHistory?size}]</b></div>
 <div>

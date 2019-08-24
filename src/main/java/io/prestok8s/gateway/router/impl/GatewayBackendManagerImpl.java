@@ -6,7 +6,8 @@ import com.google.common.collect.ImmutableList;
 
 import io.prestok8s.gateway.config.ProxyBackendConfiguration;
 import io.prestok8s.gateway.handler.QueryIdCachingProxyHandler;
-import io.prestok8s.gateway.k8s.K8sClient;
+import io.prestok8s.gateway.k8s.K8sPrestoAutoScaler;
+import io.prestok8s.gateway.k8s.K8sPrestoClusterMonitor;
 import io.prestok8s.gateway.router.GatewayBackendManager;
 
 import java.io.BufferedReader;
@@ -27,14 +28,16 @@ public class GatewayBackendManagerImpl implements GatewayBackendManager {
 
   private final ConcurrentMap<String, ProxyBackendConfiguration> backendMap;
   private final String cacheDir;
-  private final K8sClient k8sClient;
+  private final K8sPrestoClusterMonitor k8SPrestoClusterMonitor;
+  private final K8sPrestoAutoScaler K8sPrestoAutoScaler;
 
   public GatewayBackendManagerImpl(String cacheDir) {
     this.cacheDir = cacheDir;
     this.backendMap = new ConcurrentHashMap<>(); // immutable / un-modifiable
     OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
 
-    k8sClient = new K8sClient(backendMap);
+    k8SPrestoClusterMonitor = new K8sPrestoClusterMonitor(backendMap);
+    K8sPrestoAutoScaler = new K8sPrestoAutoScaler(this);
     //reloadClusterStateAtStartUp();
   }
 
@@ -52,6 +55,14 @@ public class GatewayBackendManagerImpl implements GatewayBackendManager {
         .stream()
         .filter(backend -> backend.isActive())
         .collect(Collectors.toList());
+  }
+
+  public List<ProxyBackendConfiguration> getAllDeActiveBackends() {
+    return backendMap
+            .values()
+            .stream()
+            .filter(backend -> !backend.isActive())
+            .collect(Collectors.toList());
   }
 
   public List<ProxyBackendConfiguration> getActiveBackends(String routingGroup) {
@@ -80,7 +91,7 @@ public class GatewayBackendManagerImpl implements GatewayBackendManager {
       }
     }
     backendToRemove.setActive(false);
-    persistClusterState();
+    //persistClusterState();
     log.info("De-activating backend cluster [{}]", backendName);
   }
 

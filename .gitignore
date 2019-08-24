@@ -1,0 +1,4 @@
+*.log
+.idea/
+prestok8s/datadog_values.yaml
+.DS_Store?

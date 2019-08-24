@@ -1,33 +1,22 @@
-server:
-  workers: 1
-  node:
-    environment: production
-    dataDir: /presto/etc/data
-  log:
-    presto:
-      level: INFO
-  config:
-    path: /etc/presto
-    http:
-      port: 8080
-      jmxport: 9999
-    query:
-      maxMemory: "9GB"
-      maxMemoryPerNode: "1GB"
-  jvm:
-    maxHeapSize: "10G"
-    gcMethod:
-      type: "UseG1GC"
-      g1:
-        heapRegionSize: "32M"
+# Default values for prestok8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+# K8S Service account. Needed to monitor and update(AutoScale) Presto deployments.
+# kubectl create serviceaccount prestosvcact --namespace default
+# kubectl create clusterrolebinding presto-admin-binding --clusterrole=cluster-admin --serviceaccount=default:prestosvcact
+k8sSvcAccount : default/prestosvcact
 
 image:
-  repository: shivarajugowda/prestosql
+  repository: shivarajugowda/prestok8s
   tag: latest
   pullPolicy: Always #IfNotPresent
 
 service:
   type: ClusterIP
+  port: 8080
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious

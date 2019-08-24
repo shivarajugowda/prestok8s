@@ -37,6 +37,11 @@ spec:
           volumeMounts:
             - mountPath: {{ .Values.server.config.path }}
               name: config-volume
+          ports:
+            - name: jmxport
+              protocol: TCP
+              containerPort: {{ .Values.server.config.http.jmxport }}
+              hostPort: {{ .Values.server.config.http.jmxport }}
           livenessProbe:
             exec:
               command:
