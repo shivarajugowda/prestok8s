@@ -5,7 +5,7 @@ jobs:
       tags:
         only: /.*/
     docker:
-      - image: circleci/openjdk:8u212-jdk-stretch 
+      - image: alpine 
     steps:
       - checkout
       - setup_remote_docker
@@ -13,5 +13,5 @@ jobs:
           name: Install dependencies
           command: |
             apk add --no-cache \
-              curl bash docker maven
+              curl bash docker openjdk8 maven
       - run: ./build.sh 1.0
