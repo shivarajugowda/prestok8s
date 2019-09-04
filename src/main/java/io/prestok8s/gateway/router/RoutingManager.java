@@ -7,14 +7,12 @@ import io.prestok8s.proxyserver.ProxyServerConfiguration;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.HttpMethod;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +35,7 @@ public abstract class RoutingManager {
   private final Cache<String, String> queryIdBackendCache;
   private ExecutorService executorService = Executors.newFixedThreadPool(5);
   private GatewayBackendManager gatewayBackendManager;
+  private AtomicLong queryNum = new AtomicLong(0);
 
   public RoutingManager(GatewayBackendManager gatewayBackendManager, String cacheDataDir) {
     this.gatewayBackendManager = gatewayBackendManager;
@@ -70,8 +69,36 @@ public abstract class RoutingManager {
    */
   public String provideAdhocBackend() {
     List<ProxyBackendConfiguration> backends = this.gatewayBackendManager.getActiveAdhocBackends();
-    int backendId = Math.abs(RANDOM.nextInt()) % backends.size();
+    //int backendId = Math.abs(RANDOM.nextInt()) % backends.size();
+    int backendId = (int) queryNum.incrementAndGet() % backends.size();
+
+    // Pick backend based on inverted Number of queries running per worker node.
+//    double[] weights = new double[backends.size()];
+//    for(int i=0; i<weights.length; i++){
+//      ProxyBackendConfiguration backend = backends.get(i);
+//      int numWorkers = backend.getNumWorkers();
+//
+//      if (numWorkers == 0){
+//        weights[i] = 0.0;
+//      } else {
+//        weights[i] = (numWorkers*4 - backend.getRunningQueries()) * 1.0d;
+//        if (weights[i] < 0)
+//          weights[i] = 1.0d / Math.abs(weights[i]);
+//      }
+//    }
+//    int backendId = pickWeightedRandomIdx(weights);
     return backends.get(backendId).getProxyTo();
+  }
+
+  static int pickWeightedRandomIdx(double[] weights) {
+    double totalWeight = Arrays.stream(weights).sum();
+    double random = Math.random() * totalWeight;
+    for (int i = 0; i < weights.length; ++i) {
+      random -= weights[i];
+      if (random <= 0.0d)
+        return i;
+    }
+    return -1; // Reaches here if array size is 0.
   }
 
   /**

@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <meta http-equiv="refresh" content="10">
+    <meta http-equiv="refresh" content="5">
     <style>
         .pull-left {
             float: left !important

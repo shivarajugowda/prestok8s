@@ -1,18 +1,24 @@
 
 
+kubectl config get-contexts
+kubectl config use-context CONTEXT_NAME
 
-# rm -rf ~/.helm ;  helm init --upgrade --service-account=tiller
-# time helm install --name my-presto --wait ./presto 
-# time helm install --name my-presto --wait ./prestok8s
-# time helm delete --purge my-presto
+      env: 
+      - name: AWS_PROFILE
+        value: engineering
+        
+
+time helm install my-presto ./presto --wait --set server.workers=0
+time helm install my-prestok8s ./prestok8s --wait 
+time helm uninstall my-presto
 
 # KubeFWD
 sudo kubefwd services -n default
 
 # Deactivate Cluster
-$ curl -X POST localhost:8080/gateway/backend/deactivate/my-presto-cluster1
+$ curl -X POST localhost:9080/gateway/backend/deactivate/my-presto-cluster1
 
 
 # DataDog 
-helm install --name datadog1 -f datadog-values.yaml  stable/datadog
+helm install datadog1  stable/datadog -f datadog-values.yaml 
 helm delete --purge datadog1

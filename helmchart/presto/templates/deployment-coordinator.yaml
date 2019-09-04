@@ -25,6 +25,7 @@ spec:
         - name: config-volume
           configMap:
             name: {{ template "presto.coordinator" . }}
+      terminationGracePeriodSeconds: 5
       containers:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -47,10 +48,21 @@ spec:
             httpGet:
               path: /v1/cluster
               port: http-coord
+            initialDelaySeconds: 60
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /v1/cluster
               port: http-coord
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            failureThreshold: 30
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/bash
+                  - {{ .Values.server.config.path }}/prestop_hook.sh
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

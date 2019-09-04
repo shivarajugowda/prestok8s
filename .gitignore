@@ -1,4 +1,4 @@
 *.log
 .idea/
-prestok8s/datadog_values.yaml
+helmchart/datadog-values.yaml
 .DS_Store?

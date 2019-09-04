@@ -13,4 +13,5 @@ public class ProxyBackendConfiguration extends ProxyServerConfiguration {
   private String routingGroup = "adhoc";
   private int numWorkers = 0;
   private int runningQueries = 0;
+  private Long coolDownStartTime = null;
 }

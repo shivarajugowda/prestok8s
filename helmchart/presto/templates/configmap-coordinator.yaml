@@ -15,7 +15,7 @@ data:
 
   jvm.config: |
     -server
-    -Xmx{{ .Values.server.jvm.maxHeapSize }}
+    {{ .Values.server.jvm.maxHeapSize }}
     -XX:+{{ .Values.server.jvm.gcMethod.type }}
     -XX:G1HeapRegionSize={{ .Values.server.jvm.gcMethod.g1.heapRegionSize }}
     -XX:+UseGCOverheadLimit
@@ -35,6 +35,8 @@ data:
     node-scheduler.include-coordinator=true
 {{- end }}
     http-server.http.port={{ .Values.server.config.http.port }}
+    exchange.client-threads=110
+    exchange.http-client.max-connections-per-server=250
     query.max-memory={{ .Values.server.config.query.maxMemory }}
     query.max-memory-per-node={{ .Values.server.config.query.maxMemoryPerNode }}
     discovery-server.enabled=true
@@ -48,5 +50,10 @@ data:
     cp {{ .Values.server.config.path }}/*.properties $PRESTO_CONF_DIR
     cp {{ .Values.server.config.path }}/*.config $PRESTO_CONF_DIR
     launcher run
+
+  prestop_hook.sh: |
+    #!/bin/bash
+    curl -X POST prestok8s:9080/gateway/backend/deactivate/{{ template "presto.fullname" . }}
+    sleep 30
 
 ---

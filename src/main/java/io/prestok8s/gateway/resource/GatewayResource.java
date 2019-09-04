@@ -59,7 +59,7 @@ public class GatewayResource {
   @Path("/backend/activate/{name}")
   public Response activateBackend(@PathParam("name") String name) {
     try {
-      this.gatewayBackendManager.activateBackend(name);
+      //this.gatewayBackendManager.activateBackend(name);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
       return Response.status(Response.Status.NOT_FOUND)

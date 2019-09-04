@@ -43,6 +43,11 @@ public class TestK8sClient {
                 System.out.println(" Namespace " + depNameSpace);
                 System.out.println(" Replicas " + dep.getSpec().getReplicas());
                 client.apps().deployments().inNamespace(depNameSpace).withName(depName).edit().editSpec().withReplicas(1).endSpec().done();
+
+                Map<String, String> annotations = dep.getMetadata().getAnnotations();
+                for(String key : annotations.keySet()){
+                    System.out.println(" key :" + key + " value :" + annotations.get(key));
+                }
             }
 
             client.close();
@@ -58,10 +63,6 @@ public class TestK8sClient {
 //        for (Handler h : rootLogger.getHandlers()) {
 //            h.setLevel(Level.INFO);
 //        }
-        @SuppressWarnings("unused")
-        org.jboss.logging.Logger logger = org.jboss.logging.Logger.getLogger("org.hibernate");
-        java.util.logging.Logger.getLogger("org.hibernate").setLevel(java.util.logging.Level.WARNING); //or whatever level you need
-
 
         long start = System.currentTimeMillis();
         listPrestoServices();

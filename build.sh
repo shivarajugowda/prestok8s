@@ -4,7 +4,7 @@ set -euxo pipefail
 PRESTOK8S_VERSION=$1
 DOCKER_TAG="${DOCKER_ID_USER}/prestok8s:latest"
 
-mvn clean install
+mvn clean install -DskipTests
 
 docker build ./ -f Dockerfile -t "${DOCKER_TAG}" --build-arg "PRESTOK8S_VERSION=${PRESTOK8S_VERSION}"
 #docker run -it "${DOCKER_TAG}"

@@ -16,8 +16,8 @@ public class TestHelm {
             this.isCreate = isCreate;
         }
         public void run() {
-            String[] createCmd = {"helm", "install", "--name", name,  "--wait", "./presto" , "--set", "server.workers=0"};
-            String[] deleteCmd = {"helm", "delete", "--purge", name};
+            String[] createCmd = {"helm", "install", name,  "./presto" , "--wait",  "--set", "server.workers=0"};
+            String[] deleteCmd = {"helm", "uninstall",  name};
 
             String[] cmd = isCreate ?  createCmd : deleteCmd;
 
@@ -62,8 +62,8 @@ public class TestHelm {
     }
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        boolean createCluster = true;
-        int numClusters = 3;
+        boolean createCluster = false;
+        int numClusters = 100;
         long start = System.currentTimeMillis();
         updateClusters(numClusters, createCluster);
         System.out.println("\n -- Total time taken : " + (System.currentTimeMillis() - start));

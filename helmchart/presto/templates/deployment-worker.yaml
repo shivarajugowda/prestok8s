@@ -9,6 +9,12 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: worker
+  annotations:
+    autoScale.enabled: "{{ .Values.server.autoscale.enabled }}"
+    autoScale.expectedQueriesPerWorker: "{{ .Values.server.autoscale.expectedQueriesPerWorker }}"
+    autoScale.minWorkers: "{{ .Values.server.autoscale.minWorkers }}"
+    autoScale.maxWorkers: "{{ .Values.server.autoscale.maxWorkers }}"
+    autoScale.coolDownDelayInSecs: "{{ .Values.server.autoscale.coolDownDelayInSecs }}"
 spec:
   replicas: {{ .Values.server.workers }}
   selector:
@@ -27,6 +33,7 @@ spec:
         - name: config-volume
           configMap:
             name: {{ template "presto.worker" . }}
+      terminationGracePeriodSeconds: 5
       containers:
         - name: {{ .Chart.Name }}-worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -47,15 +54,23 @@ spec:
               command:
                 - /bin/bash
                 - {{ .Values.server.config.path }}/health_check.sh
-            initialDelaySeconds: 10
-            periodSeconds: 25
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 10
           readinessProbe:
             exec:
               command:
                 - /bin/bash
                 - {{ .Values.server.config.path }}/health_check.sh
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            initialDelaySeconds: 12
+            periodSeconds: 2
+            failureThreshold: 30
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/bash
+                  - {{ .Values.server.config.path }}/prestop_hook.sh
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

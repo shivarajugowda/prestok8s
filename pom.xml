@@ -141,6 +141,12 @@
             <artifactId>mockwebserver</artifactId>
             <version>${mockwebserver.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.prestosql</groupId>
+            <artifactId>presto-jdbc</artifactId>
+            <version>317</version>
+        </dependency>
+
     </dependencies>
 
     <build>
