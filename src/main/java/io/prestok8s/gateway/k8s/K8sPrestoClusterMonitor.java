@@ -6,7 +6,6 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.prestok8s.gateway.config.ProxyBackendConfiguration;
 import io.prestok8s.gateway.router.GatewayBackendManager;
-import javafx.beans.binding.BooleanBinding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

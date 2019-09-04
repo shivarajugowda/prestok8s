@@ -12,7 +12,7 @@ k8sSvcAccount : default/prestosvcact
 image:
   repository: shivarajugowda/prestok8s
   tag: latest
-  pullPolicy: IfNotPresent #IfNotPresent
+  pullPolicy: Always #IfNotPresent Always
 
 service:
   type: LoadBalancer
