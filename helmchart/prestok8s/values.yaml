@@ -12,10 +12,10 @@ k8sSvcAccount : default/prestosvcact
 image:
   repository: shivarajugowda/prestok8s
   tag: latest
-  pullPolicy: Always #IfNotPresent Always
+  pullPolicy: IfNotPresent # IfNotPresent Always
 
 service:
-  type: LoadBalancer
+  type: ClusterIP # LoadBalancer, ClusterIP
   port: 9080
 
 resources:
