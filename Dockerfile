@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-RUN apk update && apk add wget bash tar maven
+RUN apk update && apk add wget bash tar
 
 WORKDIR /app
 ENV PATH $PATH:/app
