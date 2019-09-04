@@ -5,7 +5,7 @@ jobs:
       tags:
         only: /.*/
     docker:
-      - image: alpine
+      - image: circleci/openjdk:8u212-jdk-stretch 
     steps:
       - checkout
       - setup_remote_docker
