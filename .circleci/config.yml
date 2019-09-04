@@ -13,5 +13,5 @@ jobs:
           name: Install dependencies
           command: |
             apk add --no-cache \
-              curl bash docker      
+              curl bash docker mvn
       - run: ./build.sh 1.0
