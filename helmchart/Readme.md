@@ -2,10 +2,6 @@
 
 kubectl config get-contexts
 kubectl config use-context CONTEXT_NAME
-
-      env: 
-      - name: AWS_PROFILE
-        value: engineering
         
 
 time helm install my-presto ./presto --wait --set server.workers=0
