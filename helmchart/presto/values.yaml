@@ -1,11 +1,11 @@
 server:
   workers: 1
   autoscale:
-    enabled: false
+    enabled: true
     expectedQueriesPerWorker: 1
     minWorkers: 1
     maxWorkers: 10
-    coolDownDelayInSecs: 60
+    coolDownDelayInSecs: 30
   node:
     environment: production
     dataDir: /presto/etc/data

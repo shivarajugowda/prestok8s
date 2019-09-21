@@ -72,7 +72,7 @@ public abstract class RoutingManager {
     //int backendId = Math.abs(RANDOM.nextInt()) % backends.size();
     int backendId = (int) queryNum.incrementAndGet() % backends.size();
 
-    // Pick backend based on inverted Number of queries running per worker node.
+    // Pick backend based on # queries running per worker node.
 //    double[] weights = new double[backends.size()];
 //    for(int i=0; i<weights.length; i++){
 //      ProxyBackendConfiguration backend = backends.get(i);

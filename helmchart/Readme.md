@@ -8,7 +8,7 @@ kubectl config use-context CONTEXT_NAME
         value: engineering
         
 
-time helm install my-presto ./presto --wait --set server.workers=0
+time helm install my-presto ./presto --wait --set server.workers=1
 time helm install my-prestok8s ./prestok8s --wait 
 time helm uninstall my-presto
 
@@ -16,7 +16,7 @@ time helm uninstall my-presto
 sudo kubefwd services -n default
 
 # Deactivate Cluster
-$ curl -X POST localhost:9080/gateway/backend/deactivate/my-presto-cluster1
+$ curl -X POST localhost:9080/gateway/backend/deactivate/my-presto
 
 
 # DataDog 

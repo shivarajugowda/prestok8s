@@ -42,7 +42,7 @@ public class K8sPrestoClusterMonitor implements Runnable {
                     backendManager.removeBackend(backend.getName());
             }
 
-            // Handle additions.
+            // Monitor clusters.
             services.parallelStream().forEach(s -> this.handleBackend(client, s));
         } catch (Throwable th) {
             System.out.println("Cluster Monitor FAILED : " + th);
