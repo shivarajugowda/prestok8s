@@ -28,7 +28,7 @@
         <ehcache.version>3.5.2</ehcache.version>
         <guava.version>23.0</guava.version>
 
-        <fabric8.kubernetes-client.version>4.3.1</fabric8.kubernetes-client.version>
+        <fabric8.kubernetes-client.version>4.7.2</fabric8.kubernetes-client.version>
 
         <app.main.class>io.prestok8s.gateway.GatewayLauncher</app.main.class>
 
